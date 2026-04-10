@@ -4,6 +4,11 @@ set shell := ["bash", "-c"]
 default:
 	@just --list
 
+# Start the CARLA Server
+carla:
+	@echo "🚀 Starting CARLA Server..."
+	./CarlaUE4.sh -quality-level=Low
+
 # Run all system and environment checks, then execute the NuRec installation
 install-nurec: _check-os _check-python _check-cuda _run-install
 
@@ -44,3 +49,10 @@ _check-cuda:
 _run-install:
 	@echo "🚀 All checks passed! Starting NuRec installation..."
 	@cd PythonAPI/examples/nvidia/nurec && ./install_nurec_without_sudo.sh
+
+
+# Replay a NuRec Scenario
+nurec-replay:
+	@echo "▶️ Replaying a NuRec Scenario..."
+	@cd PythonAPI/examples/nvidia/nurec && python example_nurec_replay_save_images.py --usdz-filename PhysicalAI-Autonomous-Vehicles-NuRec/sample_set/26.02_release/0a18c5a4-9aca-4efd-b604-c75f3269c502/0a18c5a4-9aca-4efd-b604-c75f3269c502.usdz --move-spectator
+	
