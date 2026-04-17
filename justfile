@@ -10,7 +10,7 @@ carla:
 	./CarlaUE4.sh -quality-level=Low
 
 # Run all system and environment checks, then execute the NuRec installation
-install-nurec: _check-os _check-python _check-cuda _run-install
+install-nurec: _check-os _check-python _check-cuda _check-docker _check-nvidia-ctk _check-pip _run-install
 
 _check-os:
 	@echo "🔍 Checking OS..."
@@ -45,6 +45,34 @@ _check-cuda:
 	else \
 		echo "❌ Error: nvidia-smi not found. Check NVIDIA drivers."; exit 1; \
 	fi
+
+_check-docker:
+	@echo "🔍 Checking Docker..."
+	@if ! command -v docker >/dev/null 2>&1; then \
+		echo "❌ Error: Docker is not installed. Please install Docker first."; exit 1; \
+	fi
+	@if ! docker ps > /dev/null 2>&1; then \
+		echo "❌ Error: Cannot connect to Docker. Verify you are in the 'docker' group or that the Docker daemon is running."; exit 1; \
+	else \
+		echo "✅ Docker access confirmed."; \
+	fi
+
+_check-nvidia-ctk:
+	@echo "🔍 Checking NVIDIA Container Toolkit..."
+	@if ! command -v nvidia-ctk >/dev/null 2>&1; then \
+		echo "❌ Error: NVIDIA Container Toolkit is not installed. Please install it first."; exit 1; \
+	else \
+		echo "✅ NVIDIA Container Toolkit is already installed."; \
+	fi
+
+_check-pip:
+	@echo "🔍 Checking pip..."
+	@if ! command -v pip >/dev/null 2>&1; then \
+		echo "❌ Error: pip is not installed. Please install it first."; exit 1; \
+	else \
+		echo "✅ pip is installed."; \
+	fi
+
 
 _run-install:
 	@echo "🚀 All checks passed! Starting NuRec installation..."
