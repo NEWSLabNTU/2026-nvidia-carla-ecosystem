@@ -10,7 +10,10 @@ carla:
 	./CarlaUE4.sh -quality-level=Low
 
 # Run all system and environment checks, then execute the NuRec installation
-install-nurec: _check-os _check-python _check-cuda _check-docker _check-nvidia-ctk _check-pip _run-install
+install-nurec: system-check _run-install
+
+# Run all system and environment checks
+system-check: _check-os _check-python _check-cuda _check-docker _check-nvidia-ctk _check-pip
 
 _check-os:
 	@echo "🔍 Checking OS..."
