@@ -135,36 +135,7 @@ setup_direnv() {
 
 echo "🚀 Starting Non-Root NuRec Installation"
 
-# 1. Check Required System Commands
-echo "Checking required commands..."
-
-if ! command_exists docker; then
-    echo "❌ Error: Docker is not installed. Please install Docker first."
-    exit 1
-fi
-
-if ! docker ps > /dev/null 2>&1; then
-    echo "❌ Error: Cannot connect to Docker. Verify you are in the 'docker' group or that the Docker daemon is running."
-    exit 1
-else
-    echo "✅ Docker access confirmed."
-fi
-
-if ! command_exists nvidia-ctk; then
-    echo "❌ Error: NVIDIA Container Toolkit is not installed. Please install NVIDIA Container Toolkit first."
-else
-    echo "✅ NVIDIA Container Toolkit is already installed."
-    nvidia-ctk --version
-fi
-
-for cmd in pip; do
-    if ! command_exists $cmd; then
-        echo "❌ Error: $cmd is not installed. Please install it first."
-        exit 1
-    fi
-done
-
-# 2. Pull NuRec GRPC Container
+# 1. Pull NuRec GRPC Container
 echo "Checking NuRec GRPC container..."
 if check_NuRec_container "$NUREC_IMAGE"; then
     echo "NuRec GRPC container already exists, skipping download."
@@ -176,7 +147,7 @@ else
     }
 fi
 
-# 3. Handle HuggingFace Dataset
+# 2. Handle HuggingFace Dataset
 echo "Checking HuggingFace dataset..."
 if check_hf_dataset; then
     echo "HuggingFace dataset already exists, skipping download."
@@ -210,11 +181,11 @@ else
     }
 fi
 
-# 4. Set Virtual Env & Environment Variables
+# 3. Set Virtual Env & Environment Variables
 echo "Configuring virtual environment and environment variables..."
 setup_direnv
 
-# 5. Install Python dependencies
+# 4. Install Python dependencies
 # (Because of the `eval` command in setup_direnv, all of these 
 # pip installs will now correctly target the direnv virtual environment)
 echo "Installing Python dependencies..."
@@ -258,7 +229,7 @@ fi
 # Make script executable
 chmod +x "$0"
 
-# 6. Final Notice
+# 5. Final Notice
 echo ""
 echo "✅ Setup completed successfully!"
 echo ""
