@@ -26,7 +26,7 @@ Exploring various NVIDIA technologies that have been integrated into CARLA.
 
 - [Import assets from Omniverse to CARLA](https://carla.readthedocs.io/en/0.9.16/ecosys_simready)
    - ⚠️ Documentation is outdated since NVIDIA Omniverse Launcher is deprecated on October 1st, 2025.
-   - ⚠️ Require Unreal Engine + Carla (build from source).
+   - ⚠️ Require Unreal Engine + Carla ([build from source](https://carla.readthedocs.io/en/0.9.16/build_linux/)).
 - [Import assets from CARLA to Omniverse](https://carla.readthedocs.io/en/0.9.16/nvidia_simready/)
 
 
