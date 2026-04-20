@@ -63,11 +63,21 @@ _check-docker:
 	fi
 
 _check-nvidia-ctk:
-	@echo "🔍 Checking NVIDIA Container Toolkit..."
+	@echo "🔍 Checking NVIDIA Container Toolkit installation..."
 	@if ! command -v nvidia-ctk >/dev/null 2>&1; then \
 		echo "❌ Error: NVIDIA Container Toolkit is not installed. Please install it first."; exit 1; \
 	else \
-		echo "✅ NVIDIA Container Toolkit is already installed."; \
+		echo "✅ NVIDIA Container Toolkit is installed."; \
+	fi
+	@echo "🔍 Checking Docker daemon NVIDIA runtime configuration..."
+	@if ! docker info --format '{{.Runtimes}}' 2>/dev/null | grep -q 'nvidia'; then \
+		echo "❌ Error: Docker daemon is not configured to use the NVIDIA runtime."; \
+		echo "   Please configure it by running the following commands:"; \
+		echo "     sudo nvidia-ctk runtime configure --runtime=docker"; \
+		echo "     sudo systemctl restart docker"; \
+		exit 1; \
+	else \
+		echo "✅ Docker daemon is correctly configured for the NVIDIA runtime."; \
 	fi
 
 _check-pip:
