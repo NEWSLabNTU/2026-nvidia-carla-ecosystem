@@ -6,6 +6,7 @@ VK_ICD_FILENAMES="/usr/share/vulkan/icd.d/nvidia_icd.json"
 NUREC_IMAGE="docker.io/carlasimulator/nvidia-nurec-grpc:0.2.0"
 DATASET_REPO="nvidia/PhysicalAI-Autonomous-Vehicles-NuRec"
 DATASET_DIR="PhysicalAI-Autonomous-Vehicles-NuRec"
+DOCKER_CMD="docker" # Default docker command
 
 # Resolve CARLA_ROOT assuming this script is in CARLA_ROOT/PythonAPI/examples/nvidia/nurec/
 CARLA_ROOT="$(cd "../../../.." && pwd)"
@@ -16,6 +17,32 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1;
 }
 
+ask_docker_sudo() {
+    local CYAN='\033[0;36m'
+    local WHITE='\033[1;37m'
+    local YELLOW='\033[1;33m'
+    local GREEN='\033[0;32m'
+    local NC='\033[0m'
+    
+    echo "" >&2
+    echo -e "${CYAN}============================================================${NC}" >&2
+    echo -e "${WHITE}                 🐳 ${YELLOW}DOCKER PERMISSIONS${WHITE} 🐳${NC}" >&2
+    echo -e "${CYAN}============================================================${NC}" >&2
+    echo -e "${WHITE}If you are not in the 'docker' group, you need 'sudo' to run Docker.${NC}" >&2
+    echo -ne "${WHITE}Do you need to run Docker with sudo? [y/N]: ${NC}" >&2
+    read -r use_sudo
+    echo >&2
+    
+    if [[ "$use_sudo" =~ ^[Yy]$ ]]; then
+        DOCKER_CMD="sudo docker"
+        echo -e "${GREEN}✅ Docker will run with sudo.${NC}" >&2
+    else
+        DOCKER_CMD="docker"
+        echo -e "${GREEN}✅ Docker will run without sudo (default).${NC}" >&2
+    fi
+    echo "" >&2
+}
+
 check_hf_dataset() {
     if [ -d "$DATASET_DIR" ]; then
         return 0
@@ -24,7 +51,7 @@ check_hf_dataset() {
 }
 
 check_NuRec_container() {
-    if docker images | grep -q "$1"; then
+    if $DOCKER_CMD images | grep -q "$1"; then
         return 0
     fi
     return 1
@@ -133,7 +160,10 @@ setup_direnv() {
 
 # --- Main Execution ---
 
-echo "🚀 Starting Non-Root NuRec Installation"
+echo "🚀 Starting NuRec Installation"
+
+# 0. Ask for Docker Permissions
+ask_docker_sudo
 
 # 1. Pull NuRec GRPC Container
 echo "Checking NuRec GRPC container..."
@@ -141,7 +171,7 @@ if check_NuRec_container "$NUREC_IMAGE"; then
     echo "NuRec GRPC container already exists, skipping download."
 else
     echo "Initiating NuRec GRPC Container Download..."
-    docker pull "$NUREC_IMAGE" || {
+    $DOCKER_CMD pull "$NUREC_IMAGE" || {
         echo "❌ Error: Failed to download NuRec GRPC Container"
         exit 1
     }
@@ -175,7 +205,7 @@ else
     
     echo "Downloading dataset..."
     # python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR')" || {
-    python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR', revision="25.07", allow_patterns="sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz")" || {
+    python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR', revision='25.07', allow_patterns='sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz')" || {
         echo "❌ Error: Failed to download the NuRec dataset"
         exit 1
     }
