@@ -183,7 +183,7 @@ if check_hf_dataset; then
     echo "HuggingFace dataset already exists, skipping download."
 else
     echo "Installing HuggingFace CLI..."
-    python -m pip install --upgrade huggingface_hub || {
+    python3 -m pip install --upgrade huggingface_hub || {
         echo "❌ Error: Failed to install HuggingFace CLI"
         exit 1
     }
@@ -198,14 +198,14 @@ else
     hf_pat=$(echo "$hf_pat" | tr -d '\n\r' | xargs)
     
     echo "Authenticating with HuggingFace..."
-    python -c "from huggingface_hub import login; login(token='$hf_pat')" || {
+    python3 -c "from huggingface_hub import login; login(token='$hf_pat')" || {
         echo "❌ Error: Failed to authenticate with HuggingFace"
         exit 1
     }
     
     echo "Downloading dataset..."
-    # python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR')" || {
-    python -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR', revision='25.07', allow_patterns='sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz')" || {
+    # python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR')" || {
+    python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR', revision='25.07', allow_patterns='sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz')" || {
         echo "❌ Error: Failed to download the NuRec dataset"
         exit 1
     }
