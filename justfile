@@ -54,10 +54,12 @@ _check-docker:
 	@if ! command -v docker >/dev/null 2>&1; then \
 		echo "❌ Error: Docker is not installed. Please install Docker first."; exit 1; \
 	fi
-	@if ! docker ps > /dev/null 2>&1; then \
-		echo "❌ Error: Cannot connect to Docker. Verify you are in the 'docker' group or that the Docker daemon is running."; exit 1; \
+	@if docker ps > /dev/null 2>&1; then \
+		echo "✅ Docker access confirmed (without sudo)."; \
+	elif sudo docker ps > /dev/null 2>&1; then \
+		echo "✅ Docker access confirmed (with sudo)."; \
 	else \
-		echo "✅ Docker access confirmed."; \
+		echo "❌ Error: Cannot connect to Docker. Verify you are in the 'docker' group, have sudo privileges, or that the Docker daemon is running."; exit 1; \
 	fi
 
 _check-nvidia-ctk:
