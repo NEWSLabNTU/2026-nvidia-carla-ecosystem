@@ -221,7 +221,7 @@ setup_direnv
 echo "Installing Python dependencies..."
 
 echo "🐍 Installing base dependencies..."
-python -m pip install pygame numpy nvidia-nvjpeg-cu12 imageio pyyaml==6.0.2 || {
+python -m pip install pygame numpy nvidia-nvtiff-cu12 nvidia-nvjpeg-cu12 nvidia-nvjpeg2k-cu12 imageio pyyaml==6.0.2 || {
     echo "❌ Error: Failed to install base dependencies"
     exit 1
 }
