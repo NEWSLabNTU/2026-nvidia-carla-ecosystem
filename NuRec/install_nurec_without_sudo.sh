@@ -204,8 +204,7 @@ else
     }
     
     echo "Downloading dataset..."
-    # python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR')" || {
-    python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR', revision='25.07', allow_patterns='sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz')" || {
+    python3 -c "from huggingface_hub import snapshot_download; snapshot_download(repo_id='$DATASET_REPO', repo_type='dataset', local_dir='$DATASET_DIR', revision='25.07', allow_patterns='sample_set/25.07_release/*')" || {
         echo "❌ Error: Failed to download the NuRec dataset"
         exit 1
     }
