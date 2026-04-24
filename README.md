@@ -21,7 +21,14 @@ Exploring various NVIDIA technologies that have been integrated into CARLA.
    cd <CARLA_ROOT>
    just install-nurec
    ```
-
+7. Start simulation
+   ```bash
+   # terminal 1
+   just carla
+   
+   # terminal 2
+   just nurec-replay
+   ```
 
 ## SimReady
 
