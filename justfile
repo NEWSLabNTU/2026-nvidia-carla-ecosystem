@@ -7,7 +7,7 @@ default:
 # Start the CARLA Server
 carla:
 	@echo "🚀 Starting CARLA Server..."
-	./CarlaUE4.sh -quality-level=Low
+	./CarlaUE4.sh -quality-level=Epic
 
 # Run all system and environment checks, then execute the NuRec installation
 install-nurec: system-check _run-install
@@ -97,5 +97,4 @@ _run-install:
 # Replay a NuRec Scenario
 nurec-replay:
 	@echo "▶️ Replaying a NuRec Scenario..."
-	# @cd PythonAPI/examples/nvidia/nurec && python example_nurec_replay_save_images.py --usdz-filename PhysicalAI-Autonomous-Vehicles-NuRec/sample_set/26.02_release/0a18c5a4-9aca-4efd-b604-c75f3269c502/0a18c5a4-9aca-4efd-b604-c75f3269c502.usdz --move-spectator
 	@cd PythonAPI/examples/nvidia/nurec && python example_nurec_replay_save_images.py --usdz-filename PhysicalAI-Autonomous-Vehicles-NuRec/sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz --move-spectator
