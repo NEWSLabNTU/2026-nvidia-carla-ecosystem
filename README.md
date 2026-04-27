@@ -4,7 +4,7 @@ Exploring various NVIDIA technologies that have been integrated into CARLA.
 ## NuRec
 ### Installation
 
-1. Docker Group & NVIDIA Container Toolkit & Docker Runtime configured.
+1. Configure Docker Group & NVIDIA Container Toolkit & Docker Runtime.
 2. Install [CARLA 0.9.16](https://github.com/carla-simulator/carla/releases/tag/0.9.16/).
 3. Copy [`install_nurec_without_sudo.sh`](NuRec/install_nurec_without_sudo.sh) to `<CARLA_ROOT>/PythonAPI/examples/nvidia/nurec/`.
 4. Copy [`.envrc`](.envrc) and [`justfile`](justfile) to `<CARLA_ROOT>`.
