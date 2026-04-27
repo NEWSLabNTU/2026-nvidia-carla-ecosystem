@@ -97,4 +97,17 @@ _run-install:
 # Replay a NuRec Scenario
 nurec-replay:
 	@echo "▶️ Replaying a NuRec Scenario..."
-	@cd PythonAPI/examples/nvidia/nurec && python example_nurec_replay_save_images.py --usdz-filename PhysicalAI-Autonomous-Vehicles-NuRec/sample_set/25.07_release/Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz --move-spectator
+    @cd PythonAPI/examples/nvidia/nurec && \
+    BASE_DIR="PhysicalAI-Autonomous-Vehicles-NuRec/sample_set/25.07_release" && \
+    DEFAULT_FILE="Batch0001/026d6a39-bd8f-4175-bc61-fe50ed0403a3/026d6a39-bd8f-4175-bc61-fe50ed0403a3.usdz" && \
+    if command -v fzf >/dev/null 2>&1; then \
+        echo "🔍 'fzf' detected. Opening selection menu..."; \
+        SELECTED_FILE=$(cd "$BASE_DIR" && find . -type f -name "*.usdz" | fzf --prompt="Type to search or use arrows > " --height=40% --layout=reverse); \
+        if [ -z "$SELECTED_FILE" ]; then echo "⚠️ Selection cancelled. Exiting."; exit 0; fi; \
+    else \
+        echo "⚠️ 'fzf' not installed. Falling back to default file."; \
+        SELECTED_FILE="$DEFAULT_FILE"; \
+    fi && \
+    FULL_PATH="$BASE_DIR/$SELECTED_FILE" && \
+    echo "✅ Selected: $FULL_PATH" && \
+    python example_nurec_replay_save_images.py --usdz-filename "$FULL_PATH" --move-spectator
