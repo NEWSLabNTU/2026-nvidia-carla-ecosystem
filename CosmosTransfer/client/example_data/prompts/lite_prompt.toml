@@ -1,0 +1,8 @@
+prompt = "Captured from a camera mounted on a vehicle roof, we see a morning rush hour intersection in a Chinese metropolis, where scooters and cars follow painted arrows beneath overhead bilingual signs. cinematic, photorealistic, ultra high quality, ultra high resolution."
+input_video_path = "placeholder.mp4"
+negative_prompt = "low resolution, grainy, pixelated, cartoon, cg, unnatural."
+num_steps = 35
+guidance = 7.0
+sigma_max = 78
+blur_strength = "medium"
+seed = 2048
