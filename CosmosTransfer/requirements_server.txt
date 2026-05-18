@@ -1,0 +1,13 @@
+# Original dependencies (Updated pydantic for vLLM compatibility)
+pydantic>=2.9.2
+python-multipart==0.0.18
+requests==2.32.0
+supervisor==4.2.5
+huggingface-hub==0.33.5
+gradio==5.42.0
+
+# --- THE STABILITY PATCH ---
+numpy==1.26.4
+torch==2.11.0
+torchvision==0.26.0
+transformer-engine[pytorch]==2.14.1
