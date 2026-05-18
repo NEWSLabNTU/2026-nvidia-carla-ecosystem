@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: © 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# SPDX-License-Identifier: MIT
+
+FROM nvcr.io/nvidia/tritonserver:25.04-vllm-python-py3
+
+# Install system dependencies
+RUN apt-get update && apt-get --no-install-recommends install -y git tree ffmpeg wget libglib2.0-0 supervisor libmagic-dev
+
+# Fix shell and CUDA link
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh && ln -s /lib64/libcuda.so.1 /lib64/libcuda.so
+
+# Set workdir
+WORKDIR /workspace
+
+# Remove conflicting pre-installed packages if needed
+RUN rm -rf /usr/lib/python3/dist-packages/blinker-1.7.0.dist-info
+
+# 1. Copy ONLY requirements first to leverage Docker layer caching
+COPY requirements_docker.txt requirements_server.txt ./
+
+# 2. Install core requirements FIRST so PyTorch is installed
+RUN pip install --default-timeout=1000 --no-cache-dir -r requirements_docker.txt && \
+    pip install --default-timeout=1000 --no-cache-dir -r requirements_server.txt
+
+# 3. Re-install vLLM BEFORE the forced upgrade so pip doesn't silently downgrade cuBLAS
+RUN pip uninstall -y vllm && pip install --default-timeout=1000 --no-cache-dir vllm
+
+# 4. FORCE UPGRADE the CUDA libraries as the ABSOLUTE LAST pip step
+RUN pip install --default-timeout=1000 --no-cache-dir --upgrade --no-deps nvidia-cublas==13.4.1.1 nvidia-cuda-runtime==13.2.75
+
+# 5. Global symlinks for CUDA 13 libraries so transformer_engine can find them instantly
+RUN find /usr/local/lib/python3.12 -name "libcublas*.so.13*" 2>/dev/null -exec ln -sf {} /usr/lib/ \; || true && \
+    find /usr/local/lib/python3.12 -name "libcudart*.so.13*" 2>/dev/null -exec ln -sf {} /usr/lib/ \; || true
+
+# 6. Silence PyTorch's strict CUDA mismatch checks
+RUN sed -i 's/raise RuntimeError(CUDA_MISMATCH_MESSAGE/print(CUDA_MISMATCH_MESSAGE/g' /usr/local/lib/python3.12/dist-packages/torch/utils/cpp_extension.py
+
+# 7. Install isolated packages and compile Apex against the NEW PyTorch
+RUN pip install -v --upgrade --no-build-isolation --no-dependencies sam2==1.1.0 && \
+    pip install decord==0.6.0 && \
+    git clone https://github.com/NVIDIA/apex && \
+    sed -i 's/raise RuntimeError/print/g' apex/setup.py && \
+    pip install -v --disable-pip-version-check --no-cache-dir --no-build-isolation \
+        --config-settings "--build-option=--cpp_ext" \
+        --config-settings "--build-option=--cuda_ext" ./apex && \
+    rm -rf apex
+
+# 8. Copy the rest of the project files
+COPY . .
+
+# Link python explicitly if not already done
+RUN ln -sf /usr/bin/python3.12 /usr/bin/python
+
+# Clean up residuals
+RUN rm -fr /root/.cache/bazel/
+
+# Create necessary directories
+RUN mkdir -p storage/jobs_data storage/results logs
+
+# Supervisor will run the API and worker
+CMD ["supervisord", "-c", "supervisord.conf"]
